@@ -1,0 +1,5 @@
+scipy
+sklearn
+matplotlib
+cvxpy
+pot

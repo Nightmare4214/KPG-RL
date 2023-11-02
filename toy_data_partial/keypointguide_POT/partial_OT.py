@@ -1,9 +1,8 @@
 import torch
-from . import linearprog
-from . import sinkhorn
+from keypointguide_POT import linearprog
 
 
-def partial_ot(p,q,C,I,J,s,xi=None,A=None,reg=0.001):
+def partial_ot(p, q, C, I, J, s, xi=None, A=None, reg=0.001):
     if A is None:
         A = C.max()
     if xi is None:
@@ -32,7 +31,8 @@ def partial_ot(p,q,C,I,J,s,xi=None,A=None,reg=0.001):
     # pi = pi_[:-1, :-1]
     return pi_
 
-def partial_ot_source(p,q,C,I,J,s,xi=None,A=None):
+
+def partial_ot_source(p, q, C, I, J, s, xi=None, A=None):
     if A is None:
         A = 10*C.max()
     if xi is None:

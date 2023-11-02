@@ -9,8 +9,8 @@ def load_data(source, target, num_labeled=1, class_balance=True, num=10, seed=0)
     source_data = sio.loadmat("./data/decaf/{}_fc6.mat".format(source))
     target_data = sio.loadmat("./data/resnet50/{}.mat".format(target))
 
-    source_feat, source_label = source_data["fts"], source_data["labels"]
-    target_feat, target_label = target_data["fts"], target_data["labels"]
+    source_feat, source_label = source_data["fts"], source_data["labels"]  # (2817, 4096) (2817, 1)
+    target_feat, target_label = target_data["fts"], target_data["labels"]  # (498, 498) (1, 498)
     source_label, target_label = source_label.reshape(-1, ), target_label.reshape(-1, )
 
     indexes = sio.loadmat("./data/labeled_index/{}_{}.mat".format(target,num_labeled))

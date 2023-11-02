@@ -1,11 +1,11 @@
 import torch
 import numpy as np
-import scipy.io as sio
-import tqdm
+
 
 def cost_matrix(x, y):
     x, y = torch.Tensor(x), torch.Tensor(y)
-    Cxy = x.pow(2).sum(dim=1).unsqueeze(1) + y.pow(2).sum(dim=1).unsqueeze(0) - 2 * torch.matmul(x, y.t())
+    Cxy = x.pow(2).sum(dim=1).unsqueeze(1) + \
+        y.pow(2).sum(dim=1).unsqueeze(0) - 2 * torch.matmul(x, y.t())
     # Cxy = np.expand_dims((x**2).sum(axis=1),1) + np.expand_dims((y**2).sum(axis=1),0) - 2 * x@y.T
     return Cxy.numpy()
 
