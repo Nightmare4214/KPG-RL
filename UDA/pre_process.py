@@ -44,7 +44,7 @@ test_transform = transforms.Compose([
     transforms.Lambda(lambda crops: torch.stack(
         [transforms.ToTensor()(crop) for crop in crops])),
     transforms.Lambda(lambda crops: torch.stack(
-        [transforms.Normalize(norm_mean, norm_std)(crop) for crop in crops])),
+        [transforms.Normalize([0.485, 0.456, 0.406], [0.229, 0.224, 0.225])(crop) for crop in crops])),
 ])
 
 
@@ -213,6 +213,36 @@ def l_loader(path):
         with Image.open(f) as img:
             return img.convert('L')
 
+class InfiniteSliceIterator:
+    def __init__(self, array, class_):
+        assert type(array) is np.ndarray
+        self.array = array
+        self.i = 0
+        self.class_ = class_
+
+    def reset(self):
+        self.i = 0
+
+    def get(self, n):
+        len_ = len(self.array)
+        # not enough element in 'array'
+        if len_ < n:
+            # logging.debug(f"there are really few items in class {self.class_}")
+            self.reset()
+            np.random.shuffle(self.array)
+            mul = n // len_
+            rest = n - mul * len_
+            return np.concatenate((np.tile(self.array, mul), self.array[:rest]))
+
+        # not enough element in array's tail
+        if len_ - self.i < n:
+            self.reset()
+
+        if self.i == 0:
+            np.random.shuffle(self.array)
+        i = self.i
+        self.i += n
+        return self.array[i : self.i]
 
 class BalancedBatchSampler(torch.utils.data.sampler.BatchSampler):
     """
