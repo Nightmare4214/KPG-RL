@@ -171,24 +171,24 @@ def train(config):
             iter_source = iter(dset_loaders["source"])
         if i % len_train_target == 0:
             iter_target = iter(dset_loaders["target"])
-        inputs_source, labels_source = iter_source.next()
-        inputs_target, labels_target = iter_target.next()
+        inputs_source, labels_source = next(iter_source)
+        inputs_target, labels_target = next(iter_target)
         inputs_source, inputs_target, labels_source = inputs_source.cuda(
         ), inputs_target.cuda(), labels_source.cuda()
-        features_source, outputs_source = base_network(inputs_source)
+        features_source, outputs_source = base_network(inputs_source)  # (B, 256) (B, 65)
         features_target, outputs_target = base_network(inputs_target)
         # features = torch.cat((features_source, features_target), dim=0)
         pseu_labels_target = torch.argmax(outputs_target, dim=1)
         Cs_memory, Ct_memory = loss.update_center(features_source, features_target, labels_source, pseu_labels_target,
-                                                  Cs_memory, Ct_memory)
-        feats = torch.cat([Cs_memory, features_source], dim=0)
-        featt = torch.cat([Ct_memory, features_target], dim=0)
-        I = np.arange(len(Cs_memory)).tolist()
+                                                  Cs_memory, Ct_memory)  # (65, 256) (65, 256)
+        feats = torch.cat([Cs_memory, features_source], dim=0)  # (125, 256)
+        featt = torch.cat([Ct_memory, features_target], dim=0)  # (125, 256)
+        I = np.arange(len(Cs_memory)).tolist() # (65)
         J = I
-        C1 = loss.cosine_matrix(feats, Cs_memory.data)
+        C1 = loss.cosine_matrix(feats, Cs_memory.data)  # (125, 65)
         C2 = loss.cosine_matrix(featt, Ct_memory.data)
-        R = utils.structure_metrix_relation(C1, C2, tau=0.1)
-        C = loss.cosine_matrix(feats, featt)
+        R = utils.structure_metrix_relation(C1, C2, tau=0.1)  # (125, 125)
+        C = loss.cosine_matrix(feats, featt)  # (125, 125)
         alpha = 0.5
         C = alpha*C + (1.0-alpha)*R
         C_cpu = C.cpu().data
@@ -231,10 +231,12 @@ if __name__ == "__main__":
                         help="training stages")
     parser.add_argument('--radius', type=float, default=10, help="radius")
     args = parser.parse_args()
-    root = "/public/home/guxiang/olddata/guxiang/guxiang/datasets"
+    root = "/home/icml007/Nightmare4214/datasets/OfficeHomeDataset_10072016"
     # /home/icml007/Nightmare4214/datasets/OfficeHomeDataset_10072016
-    s_dset_path = '{}/office-home/'.format(root) + args.source + '.txt'
-    t_dset_path = '{}/office-home/'.format(root) + args.target + '.txt'
+    # s_dset_path = '{}/office-home/'.format(root) + args.source + '.txt'
+    s_dset_path = f'{root}/{args.source}.txt'
+    # t_dset_path = '{}/office-home/'.format(root) + args.target + '.txt'
+    t_dset_path = f'{root}/{args.target}.txt'
 
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu_id
     config = {}
