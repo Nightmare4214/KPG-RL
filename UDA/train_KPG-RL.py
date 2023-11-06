@@ -259,8 +259,8 @@ if __name__ == "__main__":
     config["optimizer"] = {"type": optim.SGD, "optim_params": {'lr': args.lr, "momentum": 0.9,
                            "weight_decay": 0.0005, "nesterov": True}, "lr_type": "inv",
                            "lr_param": {"lr": args.lr, "gamma": 0.001, "power": 0.75}}
-    config["data"] = {"source": {"list_path": s_dset_path, "batch_size": 60},
-                      "target": {"list_path": t_dset_path, "batch_size": 60},
+    config["data"] = {"source": {"list_path": s_dset_path, "batch_size": 65},
+                      "target": {"list_path": t_dset_path, "batch_size": 65},
                       "test": {"list_path": t_dset_path, "batch_size": 72}}
     config["out_file"].flush()
     config["iterations"] = 5000
