@@ -18,7 +18,7 @@ def lp(p, q, C, Mask=None):
             A@x == b]
     obj = cvx.Minimize(c.T@x)
     prob = cvx.Problem(obj, cons)
-    prob.solve()
+    prob.solve(solver=cvx.ECOS)
 
     print(prob.status)
     pi = x.value
